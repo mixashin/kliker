@@ -79,3 +79,19 @@ test("done without ink is ignored", async () => {
   expect(recognizeLetter).not.toHaveBeenCalled();
   expect(onAnswer).not.toHaveBeenCalled();
 });
+
+test("OCR that never settles still answers after the deadline", async () => {
+  vi.useFakeTimers();
+  try {
+    vi.mocked(recognizeLetter).mockReturnValueOnce(new Promise(() => {}));
+    const onAnswer = drawAndSubmit();
+    await vi.advanceTimersByTimeAsync(3999);
+    expect(screen.getByRole("button", { name: "ГОТОВО" })).toHaveTextContent("⏳");
+    expect(onAnswer).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(1);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(onAnswer).toHaveBeenCalledExactlyOnceWith(true, "Б");
+  } finally {
+    vi.useRealTimers();
+  }
+});

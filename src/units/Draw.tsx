@@ -8,6 +8,11 @@ import { putDrawing } from "../store/db";
 import { getRounds, lastPrompt, setLastPrompt } from "../store/session";
 import type { UnitProps } from "../App";
 
+// Grading never blocks play: past this the drawing counts as correct, same
+// policy as an OCR error. Covers a cold worker (first visit downloads the
+// core and the model) and tesseract.js init paths that never settle.
+const OCR_MAX_MS = 4000;
+
 /**
  * Drawing minigame: Dad's voice says a letter, the child draws it on the
  * canvas. The bundled OCR grades the drawing. The PNG is kept either way so
@@ -38,11 +43,12 @@ export default function Draw({ onAnswer, setReplayHandler }: UnitProps) {
     done.current = true;
     setBusy(true);
     let ok = true;
-    try {
-      const c = canvasRef.current;
-      if (c) ok = (await recognizeLetter(c, target)).ok;
-    } catch {
-      ok = true; // an OCR failure never punishes the kid
+    const c = canvasRef.current;
+    if (c) {
+      ok = await Promise.race([
+        recognizeLetter(c, target).then((r) => r.ok, () => true), // an OCR failure never punishes the kid
+        new Promise<boolean>((r) => setTimeout(() => r(true), OCR_MAX_MS)),
+      ]);
     }
     setFeedback({ ok });
     const blob = await toBlob();
@@ -88,7 +94,7 @@ export default function Draw({ onAnswer, setReplayHandler }: UnitProps) {
           aria-label="ГОТОВО"
           whileTap={{ scale: 0.92 }}
         >
-          ✓
+          {busy ? "⏳" : "✓"}
         </motion.button>
 
         <motion.button
