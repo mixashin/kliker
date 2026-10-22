@@ -10,6 +10,12 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
+/* Every size below is in rem. One fluid root makes the whole UI shrink
+   together on phones: 1rem = 3vmin, so the chrome gutters and the clamp()
+   floors fit a 360 px wide (or tall) screen. Unchanged at 534 px and up. */
+html { font-size: clamp(9px, 3vmin, 16px); }
+/* The parent page is text and forms: keep it at the browser default. */
+html:has(.parent) { font-size: 16px; }
 html, body, #root { height: 100%; margin: 0; }
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -72,6 +78,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  justify-content: safe center;   /* overflow starts at the top instead of clipping both ends */
+  overflow-y: auto;
   gap: 1.25rem;
   padding: 1rem 5.5rem 1.5rem 6rem;   /* room for rainbow bar (right) and sticker collection (left) */
   position: relative;
@@ -158,7 +166,7 @@ body {
 /* Left/Right minigame */
 .lr-choices {
   display: grid;
-  grid-template-columns: repeat(2, clamp(10rem, 32vw, 20rem));
+  grid-template-columns: repeat(2, clamp(10rem, 30vw, 20rem));
   gap: 1.5rem;
   justify-content: center;
 }
@@ -191,14 +199,14 @@ body {
   justify-content: center; align-items: center;
   max-width: min(700px, 90%);
 }
-.count-emoji { font-size: clamp(2.5rem, 7vw, 4rem); line-height: 1; }
+.count-emoji { font-size: clamp(2.5rem, 7vmin, 4rem); line-height: 1; }
 
 /* Math addition minigame */
 .math-row {
   display: flex; align-items: center; gap: .9rem;
   flex-wrap: wrap; justify-content: center;
   max-width: min(800px, 95%);
-  font-size: clamp(2.5rem, 7vw, 4rem); font-weight: 900;
+  font-size: clamp(2.5rem, 7vmin, 4rem); font-weight: 900;
   color: var(--accent);
 }
 .math-group {
@@ -207,12 +215,12 @@ body {
   min-width: 3rem; min-height: 3rem;
   align-items: center; justify-content: center;
 }
-.math-apple { font-size: clamp(1.6rem, 4.5vw, 2.4rem); line-height: 1; }
-.math-op    { font-size: clamp(2rem, 6vw, 3.5rem); }
-.math-q     { font-size: clamp(2.5rem, 7vw, 4rem); color: var(--ink); }
+.math-apple { font-size: clamp(1.6rem, 4.5vmin, 2.4rem); line-height: 1; }
+.math-op    { font-size: clamp(2rem, 6vmin, 3.5rem); }
+.math-q     { font-size: clamp(2.5rem, 7vmin, 4rem); color: var(--ink); }
 .choices {
   display: grid;
-  grid-template-columns: repeat(2, clamp(9rem, 26vw, 16rem));
+  grid-template-columns: repeat(2, clamp(9rem, 26vmin, 16rem));
   gap: 1.25rem;
   justify-content: center;
 }
@@ -225,7 +233,7 @@ body {
   width: 100%;
   height: 100%;
   min-width: 0;
-  font-size: clamp(4rem, 14vw, 9rem);
+  font-size: clamp(4rem, 14vmin, 9rem);
   font-weight: 800;
   padding: 0;
   border: 0;
@@ -262,6 +270,7 @@ body {
   box-shadow: 0 3px 8px rgba(0,0,0,0.3);
   display: flex; align-items: center; justify-content: center;
 }
+.rcoll-sticker svg { width: 2.75rem; height: 1.65rem; }
 
 /* Vertical rainbow progress bar — pinned to right edge */
 .rbar {
@@ -342,6 +351,7 @@ body {
    horizontal room to fit at a useful glyph size. */
 .draw-stage-wide {
   width: clamp(22rem, 90vw, 50rem);
+  max-width: 100%;
   height: clamp(14rem, 36vmin, 22rem);
 }
 .draw-template {
@@ -471,12 +481,12 @@ body {
   padding: 1.1rem 1.4rem;
   box-shadow: 0 6px 0 rgba(0,0,0,0.3);
 }
-.cscene-item { font-size: clamp(2.2rem, 6vw, 3.4rem); line-height: 1; display: inline-block; }
+.cscene-item { font-size: clamp(2.2rem, 6vmin, 3.4rem); line-height: 1; display: inline-block; }
 /* The "what to count" chip — must be unmissable for a pre-reader: big, on a
    card, pulsing (motion handles the pulse). */
 .cscene-kind {
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: clamp(2.6rem, 8vw, 4rem);
+  font-size: clamp(2.6rem, 8vmin, 4rem);
   line-height: 1;
   background: var(--bg-card);
   border-radius: 1rem;
